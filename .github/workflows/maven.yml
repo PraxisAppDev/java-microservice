@@ -171,7 +171,7 @@ jobs:
             --health-check-type ELB \
             --health-check-grace-period 300 \
             --availability-zones us-east-1a us-east-1b us-east-1c \
-            --desired-capacity 1 \
+            --desired-capacity 0 \
             --max-size 0 \
             --min-size 0 \
 
@@ -215,7 +215,7 @@ jobs:
           AUTO_SCALING_GROUP_NAME="java-microservice-asg"
           
           # Start a new instance refresh
-          aws autoscaling start-instance-refresh 
+          aws autoscaling start-instance-refresh \
               --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME \
               --preferences '{"MinHealthyPercentage": 90, "InstanceWarmup": 300}'
         shell: bash
