@@ -119,7 +119,7 @@ jobs:
         run: |
           aws ec2 create-launch-template \
             --launch-template-name java-microservice-lt \
-            --version-description java microservice for Auto-Scaling Version 1 \
+            --version-description java-microservice-for-Auto-Scaling-Version-1 \
             --launch-template-data '{"NetworkInterfaces":[{"DeviceIndex":0,"AssociatePublicIpAddress":true,"Groups":["sg-0abe937fd14a5c9f8"],"DeleteOnTermination":true}],"ImageId":"ami-0bb84b8ffd87024d8","InstanceType":"t2.nano","KeyName":"proj_2-main-key","UserData":"IyEvYmluL2Jhc2gKc3VkbyB5dW0gdXBkYXRlIC15CnN1ZG8geXVtIGluc3RhbGwgLXkgZG9ja2VyCnN1ZG8gc2VydmljZSBkb2NrZXIgc3RhcnQKc3VkbyB1c2VybW9kIC1hIC1HIGRvY2tlciBlYzItdXNlcgpzdWRvIGRvY2tlciBwdWxsIGdoY3IuaW8vcHJheGlzYXBwZGV2L2dldC1jbGllbnQtaXAtamF2YTpsYXRlc3QKc3VkbyBkb2NrZXIgcnVuIC1kIC1wIDUwMDA6ODA4MCBnaGNyLmlvL3ByYXhpc2FwcGRldi9nZXQtY2xpZW50LWlwLWphdmE6bGF0ZXN0"}' --region us-east-1
 
       - name: Get Latest Launch Template Version
@@ -132,11 +132,19 @@ jobs:
           echo "LATEST_VERSION=$LATEST_VERSION" >> $GITHUB_ENV
         shell: bash
 
+      - name: Increment Latest Version
+        if: env.existslt == 'true'
+        run: |
+          NEW_VERSION=$((LATEST_VERSION + 1))
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+        shell: bash
+
       - name: Update launch template
+        if: env.existslt == 'true'
         run: |
           aws ec2 create-launch-template-version \
             --launch-template-name java-microservice-lt \
-            --version-description java microservice for Auto-Scaling Version ${{ env.LATEST_VERSION }}+1 \
+            --version-description java-microservice-for-Auto-Scaling-Version-${{ env.NEW_VERSION }} \
             --source-version 1 \
             --launch-template-data '{"NetworkInterfaces":[{"DeviceIndex":0,"AssociatePublicIpAddress":true,"Groups":["sg-0abe937fd14a5c9f8"],"DeleteOnTermination":true}],"ImageId":"ami-0bb84b8ffd87024d8","InstanceType":"t2.nano","KeyName":"proj_2-main-key","UserData":"IyEvYmluL2Jhc2gKc3VkbyB5dW0gdXBkYXRlIC15CnN1ZG8geXVtIGluc3RhbGwgLXkgZG9ja2VyCnN1ZG8gc2VydmljZSBkb2NrZXIgc3RhcnQKc3VkbyB1c2VybW9kIC1hIC1HIGRvY2tlciBlYzItdXNlcgpzdWRvIGRvY2tlciBwdWxsIGdoY3IuaW8vcHJheGlzYXBwZGV2L2dldC1jbGllbnQtaXAtamF2YTpsYXRlc3QKc3VkbyBkb2NrZXIgcnVuIC1kIC1wIDUwMDA6ODA4MCBnaGNyLmlvL3ByYXhpc2FwcGRldi9nZXQtY2xpZW50LWlwLWphdmE6bGF0ZXN0"}' --region us-east-1
 
