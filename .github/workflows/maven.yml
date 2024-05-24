@@ -46,8 +46,9 @@ jobs:
       run: ls -a
     
     - name: cd to target file and check for jar
-      run: cd target
-           ls -a
+      run: |
+        cd target
+        ls -a
 #--------------------------------------------------------
     - uses: actions/checkout@v4
     - name: Set up QEMU
